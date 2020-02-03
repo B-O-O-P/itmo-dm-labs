@@ -1,197 +1,117 @@
 #include <iostream>
 #include <vector>
-#include <map>
-#include <unordered_map>
-#include <set>
-#include <iomanip>
 #include <algorithm>
-#include <cmath>
 
-struct vec {
-    double x, y;
-    vec() : x(0), y(0) {}
-    vec(double x, double y) : x(x), y(y) {}
 
-    vec operator+(const vec &other) const { return vec(x + other.x, y + other.y); }
-    vec operator-() const { return vec(-x, -y); }
-    vec operator-(const vec &other) const { return vec(x - other.x, y - other.y); }
-    double operator*(const vec &other) const { return x * other.x + y * other.y; }
-    vec operator*(double t) const { return vec(t * x, t * y); }
-    double len() const { return sqrt(x * x + y * y); }
-    double len2() const { return x * x + y * y; }
-    void normalize() { double length = len(); x = x / length; y = y / length; }
-    vec normalized() const { double length = len(); return vec(x / length, y / length); }
-    bool operator==(const vec &other) const { return x == other.x && y == other.y; }
-    bool operator<(const vec& b) const { return x == b.x ? y < b.y : x < b.x; }
+using namespace std;
+
+size_t n, m;
+uint64_t s;
+
+struct Edge {
+    int u, v, number;
+    long long w;
+    bool isUsed = false;
 };
-
-struct line {
-    vec p0, p1;
-};
-
-struct CompareForG {
-    bool operator()(const vec &a, const vec &b) const {
-        if (a.x == 1 && a.y == 0 && b.x == 1 && b.y == 0)
-            return false;
-        if (a.x == 1 && a.y == 0)
-            return true;
-        if (b.x == 1 && b.y == 0)
-            return false;
-
-        if (a.y > 0 && b.y <= 0)
-            return false;
-        else if (a.y < 0 && b.y >= 0)
-            return true;
-        else if (a.y == 0)
-            return b.y > 0;
-        else
-        {
-            double cosa = a.x, cosb = b.x;
-
-            return (a.y > 0 ? cosa < cosb : cosa > cosb);
-        }
-    }
-};
-std::map<vec, int> p_map;
-std::unordered_map<int, vec> p_coord;
-
-std::vector<std::map<vec, int, CompareForG>> planar_g;
+vector<Edge> edges;
+vector<int> parent, size;
 
 
-double count_s(std::vector<int> &vertices) {
-    int left = 0, right = 0;
-    double ind_min = p_coord[vertices[0]].x, ind_max = p_coord[vertices[0]].x;
-
-    for (size_t i = 0; i < vertices.size(); i++) {
-        if (p_coord[vertices[i]].x < ind_min) {
-            ind_min = p_coord[vertices[i]].x;
-            left = i;
-        }
-        else if (p_coord[vertices[i]].x > ind_max) {
-            ind_max = p_coord[vertices[i]].x;
-            right = i;
-        }
-    }
-
-    int tmp = left;
-    double s = 0;
-    int num = -1;
-    if (p_coord[vertices[(left + 1) % vertices.size()]].y > p_coord[(left - 1 + vertices.size()) % vertices.size()].y)
-        num = 1;
-
-    while (tmp != right) {
-        if (tmp == vertices.size() - 1) {
-            s += num * abs(p_coord[vertices[0]].x - p_coord[vertices[tmp]].x) * (p_coord[vertices[0]].y + p_coord[vertices[tmp]].y) / 2;
-            tmp = 0;
-        }
-        else {
-            s += num * abs(p_coord[vertices[tmp + 1]].x - p_coord[vertices[tmp]].x) * (p_coord[vertices[tmp + 1]].y + p_coord[vertices[tmp]].y) / 2;
-            tmp++;
-        }
-    }
-
-    num *= -1;
-
-    while (tmp != left) {
-        if (tmp == vertices.size() - 1) {
-            s += num * abs(p_coord[vertices[0]].x - p_coord[vertices[tmp]].x) * (p_coord[vertices[0]].y + p_coord[vertices[tmp]].y) / 2;
-            tmp = 0;
-        }
-        else {
-            s += num * abs(p_coord[vertices[tmp + 1]].x - p_coord[vertices[tmp]].x) * (p_coord[vertices[tmp + 1]].y + p_coord[vertices[tmp]].y) / 2;
-            tmp++;
-        }
-    }
-
-    return s;
+bool operator<(const Edge& first, const Edge& second) {
+    return first.w > second.w;
 }
-double dfs(int cur, const vec from, std::vector<int> &vertices, int start) {
-    if (start == cur) {
-        double res = count_s(vertices);
-        return res;
+
+bool order(const Edge& first, const Edge& second) {
+    return first.number < second.number;
+}
+
+int getDSU(int v) {
+    if (v != parent[v]) {
+        parent[v] = getDSU(parent[v]);
+    }
+    return parent[v];
+}
+
+void uniteDsu(int x, int y) {
+    x = getDSU(x);
+    y = getDSU(y);
+
+    if (size[x] < size[y]) {
+        x = x + y;
+        y = x - y;
+        x = x - y;
+    }
+    parent[y] = x;
+    size[x] += size[y];
+
+}
+
+long long maxKruskal() {
+
+    sort(edges.begin(), edges.end());
+    for (int i = 0; i < n; ++i) {
+        parent[i] = i;
+        size[i] = i;
     }
 
-    vertices.push_back(cur);
-
-    auto it = planar_g[cur].upper_bound(from);
-    if (it == planar_g[cur].end())
-        it = planar_g[cur].begin();
-
-    double res = dfs(it->second, -it->first, vertices, start);
-    planar_g[cur].erase(it);
-
+    long long res = 0;
+    for (int i = 0; i < m; ++i) {
+        int v = edges[i].v;
+        int u = edges[i].u;
+        long long w = edges[i].w;
+        if (getDSU(v) != getDSU(u)) {
+            edges[i].isUsed = true;
+            res += w;
+            uniteDsu(u, v);
+        }
+    }
     return res;
+};
 
-}
 int main() {
-    int n;
-    std::cin >> n;
+    freopen("destroy.in", "r", stdin);
+    freopen("destroy.out", "w", stdout);
 
-    std::vector<line> lines;
-    for (int i = 0; i < n; i++) {
-        line l;
-        std::cin >> l.p0.x >> l.p0.y >> l.p1.x >> l.p1.y;
+    cin >> n >> m >> s;
+    edges.resize(m);
+    parent.resize(n);
+    size.resize(n);
 
-        lines.push_back(l);
+    long long sumOfEdges = 0;
+    for (int i = 0; i < m; ++i) {
+        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+        edges[i].u--;
+        edges[i].v--;
+        edges[i].number = i + 1;
+        sumOfEdges += edges[i].w;
     }
 
-    int cur_p = 0;
-    for (int i = 0; i < n; i++) {
-        std::set<std::pair<vec, int>> intersections;
-        for (int j = 0; j < n; j++) {
-            if (i != j) {
-                line a = lines[i], b = lines[j];
-                if ((a.p1.x - a.p0.x) * (b.p1.y - b.p0.y) - (b.p1.x - b.p0.x) * (a.p1.y - a.p0.y) == 0)
-                    continue;
-                vec inter_point((
-                                        (a.p1.x * a.p0.y - a.p0.x * a.p1.y) * (b.p1.x - b.p0.x) -
-                                        (b.p1.x * b.p0.y - b.p0.x * b.p1.y) * (a.p1.x - a.p0.x)) /
-                                ((a.p1.x - a.p0.x) * (b.p1.y - b.p0.y) - (b.p1.x - b.p0.x) * (a.p1.y - a.p0.y)),
+    long long maxSpTree = maxKruskal();
 
-                                ((a.p1.x * a.p0.y - a.p0.x * a.p1.y) * (b.p1.y - b.p0.y) -
-                                 (b.p1.x * b.p0.y - b.p0.x * b.p1.y) * (a.p1.y - a.p0.y)) /
-                                ((a.p1.x - a.p0.x) * (b.p1.y - b.p0.y) - (b.p1.x - b.p0.x) * (a.p1.y - a.p0.y)));
+    vector<Edge> res;
+    int cur = 0;
 
-                if (p_map.find(inter_point) == p_map.end()) {
-                    p_map.insert(std::make_pair(inter_point, cur_p++));
-                    p_coord.insert(std::make_pair(cur_p - 1, inter_point));
-                    planar_g.push_back(std::map<vec, int, CompareForG>());
-                }
-
-                intersections.insert(std::make_pair(inter_point, p_map[inter_point]));
-            }
+    while (maxSpTree + s < sumOfEdges) {
+        if (!edges[cur].isUsed) {
+            edges[cur].isUsed = true;
+            maxSpTree += edges[cur].w;
         }
-        auto end = --intersections.end();
+        cur++;
+    }
 
-        for (auto it = intersections.begin(); it != end;) {
-            auto prev = it++;
-            planar_g[prev->second].insert(std::make_pair(((it->first - prev->first).normalized()), it->second));
-            planar_g[it->second].insert(std::make_pair((prev->first - it->first).normalized(), prev->second));
+    for (int i = 0; i < m; ++i) {
+        if (!edges[i].isUsed) {
+            res.push_back(edges[i]);
         }
     }
 
-    std::vector<double> result;
-    for (int i = 0; i < (int)planar_g.size(); i++) {
-        while (planar_g[i].size() != 0) {
-            std::vector<int> v;
-            v.push_back(i);
-            double res = dfs(planar_g[i].begin()->second, -planar_g[i].begin()->first, v, i);
-            planar_g[i].erase(planar_g[i].begin());
-            if (abs(res) > 0.00000001)
-                result.push_back(abs(res));
-        }
-    }
-    std::sort(result.begin(), result.end());
-    if (result.size() == 0) {
-        printf("0");
-        return 0;
-    }
-    int size = result.size() - 1;
-    printf("%d\n", size);
+    sort(res.begin(), res.end(), order);
 
-    auto end = --result.end();
-    for (auto it = result.begin(); it != end; ++it) {
-        printf("%.10lf\n", *it);
+    cout << res.size() << "\n";
+
+    for (auto& r : res) {
+        cout << r.number << " ";
     }
+
     return 0;
 }

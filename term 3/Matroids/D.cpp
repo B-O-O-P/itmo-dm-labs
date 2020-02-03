@@ -1,135 +1,99 @@
-#include<string>
-#include <vector>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
+
 
 using namespace std;
 
-int n;
-vector<vector<int>> graph;
+size_t n, m;
+unordered_map<int, vector<int>> sets;
+bool hasEmptySet;
 
-bool notFound(int w, int u) {
-    for (auto g : graph[u]) {
-        if (g == w) {
+bool checkFirstAxiom() {
+    return hasEmptySet;
+};
+
+bool checkSecondAxiom() {
+    int fullSet = 1 << n;
+    vector<bool> subSet(fullSet, true);
+
+    for (int i = 0; i < fullSet; ++i) {
+        subSet[i] = (sets.find(i) != sets.end());
+        for (int j = 0; (1 << j) <= i; j++) {
+            subSet[i] = subSet[(i & (~(1 << j)))] & subSet[i];
+        }
+    }
+    for (auto i = sets.begin(); i != sets.end(); ++i) {
+        if (!subSet[i->first]) {
             return false;
         }
     }
     return true;
 }
 
-bool checkPlanarity() {
-    if (graph.size() < 5)
-        return true;
-    else if (graph.size() == 5) {
-        for (int i = 0; i < 5; i++) {
-            if (graph[i].size() != 4)
-                return true;
-        }
-        return false;
-    } else {
-        int count1 = 0;
-        for (int i = 0; i < 6; ++i) {
-            count1 = 0;
-            for (int j = 0; j < 6; ++j) {
-                int num = 0;
-                if (j != i) {
-                    for (auto v : graph[j]) {
-                        if (v != i)
-                            num++;
-                    }
-                    if (num > 3)
-                        count1++;
+bool checkThirdAxiom() {
+    for (auto A = sets.begin(); A != sets.end(); ++A) {
+        for (auto B = A; B != sets.end(); ++B) {
+            if (A->second.size() != B->second.size()) {
+                if (A->second.size() < B->second.size()) {
+                    swap(A, B);
                 }
-            }
-            if (count1 > 4)
-                return false;
-        }
+                vector<int> BnotA(n);
+                bool existsY = false;
+                for (int i : A->second) {
+                    BnotA[i] = true;
+                }
+                for (int i : B->second) {
+                    BnotA[i] = false;
+                }
 
-        vector<vector<int>> homoK33(6, vector<int>(6, 0));
-        for (int i = 0; i < 6; i++) {
-            for (auto v : graph[i]) {
-                homoK33[i][v] = 1;
-                homoK33[v][i] = 1;
-            }
-        }
-
-        int count2 = 0;
-        for (int i = 0; i < 6; i++) {
-            for (int j = i + 1; j < 6; j++) {
-                for (int k = j + 1; k < 6; k++) {
-                    count2 = 0;
-                    for (int t = 0; t < 6; t++) {
-                        if (homoK33[i][t] && homoK33[j][t] && homoK33[k][t]) {
-                            count2++;
-                        }
+                for (int i = 0; i < n; ++i) {
+                    if (BnotA[i]) {
+                        existsY = existsY | (sets.find(B->first | (1 << i)) != sets.end());
                     }
-                    if (count2 > 2)
-                        return false;
+                }
+
+                if (!existsY) {
+                    return false;
                 }
             }
         }
-
-        int count3 = 0;
-        for (int i = 0; i < 6; ++i) {
-            for (int j = 0; j < graph[i].size(); ++j) {
-                for (int k = j + 1; k < graph[i].size(); ++k) {
-                    int u = graph[i][j];
-                    int w = graph[i][k];
-                    if (notFound(u, w)) {
-                        count3 = 0;
-                        for (int e = 0; e < 6; e++) {
-                            if (e != i) {
-                                int num = 0;
-                                if (e == w || e == u)
-                                    num++;
-                                for (auto v : graph[e]) {
-                                    if (v != i) {
-                                        num++;
-                                    }
-                                }
-                                if (num > 3) count3++;
-                            }
-                        }
-                        if (count3 > 4) return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
+    return true;
+
 }
 
-
 int main() {
-    freopen("planaritycheck.in", "r", stdin);
-    freopen("planaritycheck.out", "w", stdout);
-    cin >> n;
-    cin.get();
-    string g;
+    freopen("check.in", "r", stdin);
+    freopen("check.out", "w", stdout);
 
-    for (int i = 0; i < n; i++) {
-        char c[255];
-        cin.getline(c, 255);
-        g = c;
-        int m = 1;
-        while (m * (m - 1) / 2 != g.length()) {
-            m++;
-        }
-        if (m < 5) {
-            cout << "YES" << endl;
-        } else {
-            graph = vector<vector<int>>(m);
-            int index = 0;
-            for (int j = 0; j < m; ++j) {
-                for (int k = 0; k < j; ++k) {
-                    if (g[index] == '1') {
-                        graph[j].push_back(k);
-                        graph[k].push_back(j);
-                    }
-                    index++;
-                }
-            }
-            cout << (checkPlanarity() ? "YES" : "NO") << endl;
+    cin >> n >> m;
+
+    for (int i = 0; i < m; ++i) {
+        int k;
+        cin >> k;
+        int set = 0;
+        vector<int> bitsOfSet;
+
+        if (k == 0) {
+            hasEmptySet = true;
         }
 
+        for (int j = 0; j < k; j++) {
+            int nextSet;
+            cin >> nextSet;
+            nextSet--;
+            set = set | (1 << nextSet);
+            bitsOfSet.push_back(nextSet);
+        }
+
+        sets.insert({set, bitsOfSet});
     }
+
+    if (checkFirstAxiom() && checkSecondAxiom() && checkThirdAxiom()) {
+        cout << "YES";
+    } else {
+        cout << "NO";
+    }
+    return 0;
 }
