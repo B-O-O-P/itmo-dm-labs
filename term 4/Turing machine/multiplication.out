@@ -1,0 +1,156 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> printZero' 2 >
+s 1 -> printOne' 3 >
+s * -> printLeft * <
+
+zero 0 -> zero _ <
+zero 1 -> zero _ <
+zero # -> zero _ <
+zero * -> zero _ <
+zero _ -> ac 0 ^
+
+printZero' 0 -> printZero' 0 >
+printZero' 1 -> printZero' 1 >
+printZero' * -> printZero' * >
+printZero' # -> printZero # >
+printZero' _ -> printZero # >
+printZero 0 -> printZero 0 >
+printZero 1 -> printZero 1 >
+printZero _ -> goToSign 0 <
+
+printOne' 0 -> printOne' 0 >
+printOne' 1 -> printOne' 1 >
+printOne' * -> printOne' * >
+printOne' # -> printOne # >
+printOne' _ -> printOne # >
+printOne 0 -> printOne 0 >
+printOne 1 -> printOne 1 >
+printOne _ -> goToSign 1 <
+
+printLeft 2 -> printLeft 0 <
+printLeft 3 -> printLeft 1 <
+printLeft _ -> counter' _ >
+
+printBoth 0 -> printBoth 0 <
+printBoth 1 -> printBoth 1 <
+printBoth 2 -> printBoth 0 <
+printBoth 3 -> printBoth 1 <
+printBoth # -> printBoth # <
+printBoth * -> printBoth * <
+printBoth _ -> counter _ >
+
+
+printResult 2 -> printResult 0 >
+printResult 3 -> printResult 1 >
+printResult _ -> printBoth _ <
+
+counter 0 -> counter 0 >
+counter 1 -> counter 1 >
+counter * -> goRight * >
+
+counter' 0 -> counter' 0 >
+counter' 1 -> counter' 1 >
+counter' * -> counter' * >
+counter' # -> goLeftOne # <
+
+subRightOne 0 -> subRightOne 0 <
+subRightOne 1 -> addRightOne 0 >
+subRightOne * -> deleteBoth' * >
+
+addRightOne 0 -> addRightOne 1 >
+addRightOne # -> add # >
+
+add 0 -> add 0 >
+add 1 -> add 1 >
+add 2 -> sum 2 <
+add 3 -> sum 3 <
+add _ -> sum _ <
+
+sum 0 -> addZero' 2 <
+sum 1 -> addOne' 3 <
+sum # -> printResult # >
+
+addZero 0 -> goToResult 2 >
+addZero 1 -> goToResult 3 >
+addZero 2 -> addZero 2 <
+addZero 3 -> addZero 3 <
+addZero _ -> goToResult 2 >
+
+
+addZero' 0 -> addZero' 0 <
+addZero' 1 -> addZero' 1 <
+addZero' # -> addZero' # <
+addZero' * -> addZero * <
+
+addOne 0 -> goToResult 3 >
+addOne 1 -> addingOne 2 <
+addOne 2 -> addOne 2 <
+addOne 3 -> addOne 3 <
+addOne _ -> goToResult 3 >
+
+addOne' 0 -> addOne' 0 <
+addOne' 1 -> addOne' 1 <
+addOne' # -> addOne' # <
+addOne' * -> addOne * <
+
+addingOne 0 -> goToResult 1 >
+addingOne 1 -> addingOne 0 <
+addingOne _ -> goToResult 1 >
+
+deleteZero 0 -> deleteZero 0 >
+deleteZero 1 -> deleteZero 1 >
+deleteZero # -> deleteZero # >
+deleteZero _ -> zero _ <
+
+deleteBoth 0 -> deleteBoth _ <
+deleteBoth # -> deleteBoth _ <
+deleteBoth 1 -> deleteBoth _ <
+deleteBoth * -> toStart _ <
+
+deleteBoth' 0 -> deleteBoth' 0 >
+deleteBoth' # -> deleteBoth' # >
+deleteBoth' 1 -> deleteBoth' 1 >
+deleteBoth' _ -> deleteBoth _ <
+
+goToSign 0 -> goToSign 0 <
+goToSign 1 -> goToSign 1 <
+goToSign # -> goToSign # <
+goToSign * -> goToSign * <
+goToSign 2 -> s 2 >
+goToSign 3 -> s 3 >
+
+goToResult * -> goToResult' * >
+goToResult 0 -> goToResult 0 >
+goToResult 1 -> goToResult 1 >
+goToResult 2 -> goToResult 2 >
+goToResult 3 -> goToResult 3 >
+
+goToResult' 0 -> goToResult' 0 >
+goToResult' 1 -> goToResult' 1 >
+goToResult' # -> goToResult' # >
+goToResult' 2 -> sum 2 <
+goToResult' 3 -> sum 3 <
+
+goRight 0 -> goRight 0 >
+goRight 1 -> goRight 1 >
+goRight # -> subRightOne # <
+
+goRightOne 0 -> goRightOne 1 >
+goRightOne # -> subRightOne # <
+
+goLeftOne 0 -> goLeftOne 0 <
+goLeftOne 1 -> goRightOne 0 >
+goLeftOne * -> deleteZero * >
+
+goStartRight 0 -> goStartRight 0 <
+goStartRight 1 -> goStartRight 1 <
+goStartRight # -> goStartRight # <
+goStartRight * -> goRight * >
+
+toStart 0 -> toStart 0 <
+toStart 1 -> toStart 1 <
+toStart _ -> ac _ >

@@ -1,0 +1,259 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> s 0 >
+s 1 -> s 1 >
+s _ -> restart * <
+
+restart 0 -> restart 0 <
+restart 1 -> restart 1 <
+restart 2 -> saveInput 2 >
+restart 3 -> saveInput 3 >
+restart * -> restart * <
+restart _ -> saveInput _ >
+
+goToStart 0 -> goToStart 0 <
+goToStart 1 -> goToStart 1 <
+goToStart 2 -> save 2 >
+goToStart 3 -> save 3 >
+goToStart * -> goToStart * <
+goToStart # -> goToStart # <
+goToStart _ -> save _ >
+
+goToDelimeter 0 -> goToDelimeter 0 >
+goToDelimeter 1 -> goToDelimeter 1 >
+goToDelimeter 2 -> goToDelimeter 2 >
+goToDelimeter 3 -> goToDelimeter 3 >
+goToDelimeter 4 -> goToDelimeter 4 >
+goToDelimeter 5 -> goToDelimeter 5 >
+goToDelimeter 6 -> digit 6 <
+goToDelimeter 7 -> digit 7 <
+goToDelimeter % -> goToDelimeter % >
+goToDelimeter $ -> goToDelimeter $ >
+goToDelimeter * -> goToDelimeter * >
+goToDelimeter # -> digit # <
+goToDelimeter _ -> goToDelimeter _ >
+
+goToStartRight 0 -> goToStartRight 0 >
+goToStartRight 1 -> goToStartRight 1 >
+goToStartRight 4 -> goToStartRight 0 >
+goToStartRight 5 -> goToStartRight 1 >
+goToStartRight # -> goToStartRight # >
+goToStartRight * -> goToStartRight * >
+goToStartRight _ -> goToLeftStart _ <
+
+goToLeftStart 0 -> goToLeftStart 0 <
+goToLeftStart 1 -> goToLeftStart 1 <
+goToLeftStart 2 -> goToLeftStart 0 <
+goToLeftStart 3 -> goToLeftStart 1 <
+goToLeftStart 6 -> goToLeftStart 6 <
+goToLeftStart 7 -> goToLeftStart 7 <
+goToLeftStart % -> goToLeftStart % <
+goToLeftStart $ -> goToLeftStart $ <
+goToLeftStart * -> goToLeftStart * <
+goToLeftStart # -> goToLeftStart # <
+goToLeftStart _ -> set _ >
+
+goToLeftRestart 0 -> goToLeftRestart 0 <
+goToLeftRestart 1 -> goToLeftRestart 1 <
+goToLeftRestart 2 -> goToLeftRestart 0 <
+goToLeftRestart 3 -> goToLeftRestart 1 <
+goToLeftRestart 6 -> goToLeftRestart 0 <
+goToLeftRestart 7 -> goToLeftRestart 1 <
+goToLeftRestart * -> goToLeftRestart * <
+goToLeftRestart % -> goToLeftRestart 0 <
+goToLeftRestart $ -> goToLeftRestart 1 <
+goToLeftRestart _ -> save _ >
+
+goToEnd 0 -> goToEnd 1 >
+goToEnd 1 -> goToEnd 0 >
+goToEnd 6 -> goToEnd 6 >
+goToEnd 7 -> goToEnd 7 >
+goToEnd # -> goToEnd # >
+goToEnd _ -> delete _ <
+
+goBack 0 -> goBack 1 >
+goBack 1 -> goBack 0 >
+goBack 6 -> goBack 6 >
+goBack 7 -> goBack 7 >
+goBack # -> goBack # >
+goBack _ -> deleteAll' _ <
+
+saveInput 0 -> saveInputZero 2 >
+saveInput 1 -> saveInputOne 3 >
+saveInput * -> setDelimeter * >
+
+saveInputZero 0 -> saveInputZero 0 >
+saveInputZero 1 -> saveInputZero 1 >
+saveInputZero * -> saveInputZero * >
+saveInputZero # -> saveInputZero # >
+saveInputZero _ -> restart 0 <
+
+saveInputOne 0 -> saveInputOne 0 >
+saveInputOne 1 -> saveInputOne 1 >
+saveInputOne * -> saveInputOne * >
+saveInputOne # -> saveInputOne # >
+saveInputOne _ -> restart 1 <
+
+save 0 -> saveZero 2 >
+save 1 -> saveOne 3 >
+save * -> setLeftZero * <
+
+saveZero 0 -> saveZero 0 >
+saveZero 1 -> saveZero 1 >
+saveZero * -> saveZero * >
+saveZero # -> saveZero # >
+saveZero _ -> goToStart 0 <
+
+saveOne 0 -> saveOne 0 >
+saveOne 1 -> saveOne 1 >
+saveOne * -> saveOne * >
+saveOne # -> saveOne # >
+saveOne _ -> goToStart 1 <
+
+setDelimeter 0 -> setDelimeter 0 >
+setDelimeter 1 -> setDelimeter 1 >
+setDelimeter * -> setDelimeter * >
+setDelimeter _ -> subOne # <
+
+setLeftZero 2 -> deleteAll 0 <
+setLeftZero 3 -> deleteAll 0 <
+
+set 0 -> set 0 >
+set 1 -> set 1 >
+set % -> setEnd % <
+set $ -> setEnd $ <
+set * -> setEnd * <
+
+setEnd 0 -> goToDelimeter % <
+setEnd 1 -> goToDelimeter $ <
+
+subOne 1 -> check 0 <
+subOne 0 -> subOne' 1 <
+subOne 6 -> subOne' 1 <
+subOne 7 -> check 0 <
+
+subOne' 1 -> goToLeftRestart 0 <
+subOne' 0 -> subOne' 1 <
+subOne' 6 -> subOne' 1 <
+subOne' 7 -> goToLeftRestart 0 <
+subOne' * -> goBack * >
+
+check 0 -> check 0 <
+check 1 -> goToLeftRestart 1 <
+check 6 -> check 0 <
+check 7 -> goToLeftRestart 1 <
+check * -> goBack * >
+
+delete 0 -> delete _ <
+delete 1 -> delete _ <
+delete 6 -> delete _ <
+delete 7 -> delete _ <
+delete # -> subOne # <
+delete * -> delete _ <
+
+deleteAll' 0 -> deleteAll' _ <
+deleteAll' 1 -> deleteAll' _ <
+deleteAll' 6 -> deleteAll' _ <
+deleteAll' 7 -> deleteAll' _ <
+deleteAll' # -> deleteAll' _ <
+deleteAll' * -> finish _ <
+
+deleteAll 2 -> deleteAll _ <
+deleteAll 3 -> deleteAll _ <
+deleteAll _ -> findZero _ >
+
+findZero _ -> findZero _ >
+findZero 0 -> goToDelimeter 0 >
+
+digit 0 -> digitZero 6 <
+digit 1 -> digitOne 7 >
+digit 6 -> goToEnd 6 >
+digit 7 -> goToEnd 7 >
+digit * -> digit * >
+
+digitZero 0 -> digitZero 0 <
+digitZero 1 -> digitZero 1 <
+digitZero * -> reset * <
+digitZero % -> reset % <
+digitZero $ -> reset $ <
+
+digitOne 0 -> digitOne 0 >
+digitOne 1 -> digitOne 1 >
+digitOne 6 -> digitOne 6 >
+digitOne 7 -> digitOne 7 >
+digitOne # -> result # >
+digitOne $ -> digitOne $ >
+digitOne % -> digitOne % >
+
+deleteZeroes 0 -> deleteZeroes _ >
+deleteZeroes 1 -> ac 1 ^
+deleteZeroes _ -> ac 0 ^
+
+result 0 -> result 0 >
+result 1 -> result 1 >
+result 2 -> result 2 >
+result 3 -> result 3 >
+result 4 -> sum 4 <
+result 5 -> sum 5 <
+result 6 -> result 6 >
+result 7 -> result 7 >
+result % -> result % >
+result $ -> result $ >
+result * -> result * >
+result # -> result # >
+result _ -> sum _ <
+
+sum 0 -> addZero 4 <
+sum 1 -> addOne 5 <
+sum # -> goToStartRight # >
+
+addOne 0 -> addOne 0 <
+addOne 1 -> addOne 1 <
+addOne 6 -> addOne 6 <
+addOne 7 -> addOne 7 <
+addOne # -> addOne # <
+addOne * -> addingOne * <
+
+addZero 0 -> addZero 0 <
+addZero 1 -> addZero 1 <
+addZero 6 -> addZero 6 <
+addZero 7 -> addZero 7 <
+addZero # -> addZero # <
+addZero * -> addingZero * <
+
+addingZero 0 -> result 2 >
+addingZero 1 -> result 3 >
+addingZero 2 -> addingZero 2 <
+addingZero 3 -> addingZero 3 <
+addingZero % -> addingZero % <
+addingZero $ -> addingZero $ <
+addingZero _ -> result 2 >
+
+addingOne 0 -> result 3 >
+addingOne 1 -> carry 2 <
+addingOne 2 -> addingOne 2 <
+addingOne 3 -> addingOne 3 <
+addingOne % -> addingOne % <
+addingOne $ -> addingOne $ <
+addingOne _ -> result 3 >
+
+carry 0 -> result 1 >
+carry 1 -> carry 0 <
+carry _ -> result 1 >
+
+finish 0 -> finish 0 <
+finish 1 -> finish 1 <
+finish 2 -> finish 0 <
+finish 3 -> finish 1 <
+finish $ -> finish 1 <
+finish % -> finish 0 <
+finish _ -> deleteZeroes _ >
+
+reset 0 -> goToDelimeter % >
+reset 1 -> goToDelimeter $ >
+reset % -> reset % <
+reset $ -> reset $ <
+reset _ -> goToDelimeter % >

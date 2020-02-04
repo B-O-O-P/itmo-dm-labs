@@ -1,0 +1,43 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> s 0 >
+s 1 -> s 1 >
+s _ -> back _ <
+
+back 0 -> addZero 4 >
+back 1 -> addOne 5 >
+back 2 -> back 2 <
+back 3 -> back 3 <
+back 4 -> back 4 <
+back 5 -> back 5 <
+back _ -> reversed _ >
+
+addZero 0 -> addZero 0 >
+addZero 1 -> addZero 1 >
+addZero 2 -> addZero 2 >
+addZero 3 -> addZero 3 >
+addZero 4 -> addZero 4 >
+addZero 5 -> addZero 5 >
+addZero _ -> back 2 <
+
+addOne 0 -> addOne 0 >
+addOne 1 -> addOne 1 >
+addOne 2 -> addOne 2 >
+addOne 3 -> addOne 3 >
+addOne 4 -> addOne 4 >
+addOne 5 -> addOne 5 >
+addOne _ -> back 3 <
+
+reversed 2 -> reversed 0 >
+reversed 3 -> reversed 1 >
+reversed 4 -> reversed _ >
+reversed 5 -> reversed _ >
+reversed _ -> goBack _ <
+
+goBack 0 -> goBack 0 <
+goBack 1 -> goBack 1 < 
+goBack _ -> ac _ >
+

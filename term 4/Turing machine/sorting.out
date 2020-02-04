@@ -1,0 +1,183 @@
+4
+
+S 0 _ _ _ -> save 0 ^ 0 ^ _ > _ >
+S 1 _ _ _ -> save 1 ^ 0 ^ _ > _ >
+
+add 0 0 _ _ -> add 0 ^ 0 > _ ^ _ ^
+add 0 1 _ _ -> add 0 ^ 1 > _ ^ _ ^
+add 0 _ _ _ -> add' 0 ^ _ < _ ^ _ ^
+add 1 0 _ _ -> add 1 ^ 0 > _ ^ _ ^
+add 1 1 _ _ -> add 1 ^ 1 > _ ^ _ ^
+add 1 _ _ _ -> add' 1 ^ _ < _ ^ _ ^
+add 2 0 _ _ -> add 2 ^ 0 > _ ^ _ ^
+add 2 1 _ _ -> add 2 ^ 1 > _ ^ _ ^
+add 2 _ _ _ -> add' 2 ^ _ < _ ^ _ ^
+add 3 0 _ _ -> add 3 ^ 0 > _ ^ _ ^
+add 3 1 _ _ -> add 3 ^ 1 > _ ^ _ ^
+add 3 _ _ _ -> add' 3 ^ _ < _ ^ _ ^
+
+add' 0 0 _ _ -> goToStart 0 ^ 1 ^ _ ^ _ ^
+add' 0 1 _ _ -> add' 0 ^ 0 < _ ^ _ ^
+add' 0 _ _ _ -> save 0 ^ 1 ^ _ ^ _ ^
+add' 1 0 _ _ -> goToStart 1 ^ 1 ^ _ ^ _ ^
+add' 1 1 _ _ -> add' 1 ^ 0 < _ ^ _ ^
+add' 1 _ _ _ -> save 1 ^ 1 ^ _ ^ _ ^
+add' 2 0 _ _ -> goToStart 2 ^ 1 ^ _ ^ _ ^
+add' 2 1 _ _ -> add' 2 ^ 0 < _ ^ _ ^
+add' 2 _ _ _ -> save 2 ^ 1 ^ _ ^ _ ^
+add' 3 0 _ _ -> goToStart 3 ^ 1 ^ _ ^ _ ^
+add' 3 1 _ _ -> add' 3 ^ 0 < _ ^ _ ^
+add' 3 _ _ _ -> save 3 ^ 1 ^ _ ^ _ ^
+
+afterSave _ 0 0 _ -> afterSave _ ^ 0 ^ 0 < _ ^
+afterSave _ 0 1 _ -> afterSave _ ^ 0 ^ 1 < _ ^
+afterSave _ 0 _ _ -> check _ ^ 0 ^ _ > _ ^
+afterSave | 0 0 _ -> afterSave | ^ 0 ^ 0 < _ ^
+afterSave | 0 1 _ -> afterSave | ^ 0 ^ 1 < _ ^
+afterSave | 0 _ _ -> check | ^ 0 ^ _ > _ ^
+
+save 0 0 _ _ -> save' 0 > 0 ^ 0 > _ ^
+save 1 0 _ _ -> save' 1 > 0 ^ 1 > _ ^
+save 2 0 _ _ -> save 2 > 0 ^ _ > _ ^
+save 3 0 _ _ -> save 3 > 0 ^ _ > _ ^
+save | 0 _ _ -> save | > 0 ^ _ ^ _ ^
+save _ 0 _ _ -> goToStartIfFirst _ > 0 ^ _ ^ _ ^
+save 0 1 _ _ -> save' 0 > 1 ^ 0 > _ ^
+save 1 1 _ _ -> save' 1 > 1 ^ 1 > _ ^
+save 2 1 _ _ -> save 2 > 1 ^ _ > _ ^
+save 3 1 _ _ -> save 3 > 1 ^ _ > _ ^
+save | 1 _ _ -> save | > 1 ^ _ ^ _ ^
+save _ 1 _ _ -> goToStartIfFirst _ > 1 ^ _ ^ _ ^
+
+save' 0 0 _ _ -> save' 0 > 0 ^ 0 > _ ^
+save' 1 0 _ _ -> save' 1 > 0 ^ 1 > _ ^
+save' | 0 _ _ -> afterSave | ^ 0 ^ _ < _ ^
+save' _ 0 _ _ -> afterSave _ ^ 0 ^ _ < _ ^
+save' 0 1 _ _ -> save' 0 > 1 ^ 0 > _ ^
+save' 1 1 _ _ -> save' 1 > 1 ^ 1 > _ ^
+save' | 1 _ _ -> afterSave | ^ 1 ^ _ < _ ^
+save' _ 1 _ _ -> afterSave _ ^ 1 ^ _ < _ ^
+
+afterSave _ 1 0 _ -> afterSave _ ^ 1 ^ 0 < _ ^
+afterSave _ 1 1 _ -> afterSave _ ^ 1 ^ 1 < _ ^
+afterSave _ 1 _ _ -> check _ ^ 1 ^ _ > _ ^
+afterSave | 1 0 _ -> afterSave | ^ 1 ^ 0 < _ ^
+afterSave | 1 1 _ -> afterSave | ^ 1 ^ 1 < _ ^
+afterSave | 1 _ _ -> check | ^ 1 ^ _ > _ ^
+
+
+check | 0 0 _ -> check | ^ 0 > 0 > _ ^
+check | 1 1 _ -> check | ^ 1 > 1 > _ ^
+check | _ _ _ -> found | ^ _ < _ < _ ^
+check | 0 1 _ -> notFound | ^ 0 ^ 0 ^ _ ^
+check | 1 0 _ -> notFound | ^ 1 ^ 0 ^ _ ^
+check | _ 0 _ -> notFound | ^ _ ^ 0 ^ _ ^
+check | _ 1 _ -> notFound | ^ _ ^ 1 ^ _ ^
+check | 0 _ _ -> notFound | ^ 0 ^ 0 ^ _ ^
+check | 1 _ _ -> notFound | ^ 1 ^ 0 ^ _ ^
+check _ 0 0 _ -> check _ ^ 0 > 0 > _ ^
+check _ 1 1 _ -> check _ ^ 1 > 1 > _ ^
+check _ _ _ _ -> found _ ^ _ < _ < _ ^
+check _ 0 1 _ -> notFound _ ^ 0 ^ 0 ^ _ ^
+check _ 1 0 _ -> notFound _ ^ 1 ^ 0 ^ _ ^
+check _ _ 0 _ -> notFound _ ^ _ ^ 0 ^ _ ^
+check _ _ 1 _ -> notFound _ ^ _ ^ 1 ^ _ ^
+check _ 0 _ _ -> notFound _ ^ 0 ^ 0 ^ _ ^
+check _ 1 _ _ -> notFound _ ^ 1 ^ 0 ^ _ ^
+
+checkFirst 0 _ _ _ -> goToStartAndCheck 0 < _ ^ _ ^ _ ^
+checkFirst 1 _ _ _ -> goToStartAndCheck 1 < _ ^ _ ^ _ ^
+checkFirst 2 _ _ _ -> checkFirst 2 > _ ^ _ ^ _ ^
+checkFirst 3 _ _ _ -> checkFirst 3 > _ ^ _ ^ _ ^
+checkFirst | _ _ _ -> checkFirst | > _ ^ _ ^ _ ^
+checkFirst _ _ _ _ -> finished' _ ^ _ ^ _ ^ _ <
+
+found _ 0 0 _ -> found _ ^ 0 < 0 < _ ^
+found _ 1 1 _ -> found _ ^ 1 < 1 < _ ^
+found _ _ _ _ -> saveCounter _ ^ _ > _ > _ ^
+found | 0 0 _ -> found | ^ 0 < 0 < _ ^
+found | 1 1 _ -> found | ^ 1 < 1 < _ ^
+found | _ _ _ -> saveCounter | ^ _ > _ > _ ^
+
+notFound | 0 1 _ -> notFound | ^ 0 > _ > _ ^
+notFound | 0 0 _ -> notFound | ^ 0 > _ > _ ^
+notFound | 1 1 _ -> notFound | ^ 1 > _ > _ ^
+notFound | 1 0 _ -> notFound | ^ 1 > _ > _ ^
+notFound | _ 1 _ -> notFound | ^ _ ^ _ > _ ^
+notFound | _ 0 _ -> notFound | ^ _ ^ _ > _ ^
+notFound | _ _ _ -> goToStart | > _ < _ > _ ^
+notFound _ 0 1 _ -> notFound _ ^ 0 > _ > _ ^
+notFound _ 0 0 _ -> notFound _ ^ 0 > _ > _ ^
+notFound _ 1 1 _ -> notFound _ ^ 1 > _ > _ ^
+notFound _ 1 0 _ -> notFound _ ^ 1 > _ > _ ^
+notFound _ _ 1 _ -> notFound _ ^ _ ^ _ > _ ^
+notFound _ _ 0 _ -> notFound _ ^ _ ^ _ > _ ^
+notFound _ _ _ _ -> goToStartIfFirst _ < _ ^ _ > _ ^
+
+saveCounter _ 0 0 _ -> saveCounter _ ^ 0 > 0 > 0 >
+saveCounter _ 1 1 _ -> saveCounter _ ^ 1 > 1 > 1 >
+saveCounter _ _ _ _ -> changeInput _ < _ ^ _ > | >
+saveCounter | 0 0 _ -> saveCounter | ^ 0 > 0 > 0 >
+saveCounter | 1 1 _ -> saveCounter | ^ 1 > 1 > 1 >
+saveCounter | _ _ _ -> changeInput | < _ ^ _ > | >
+
+changeInput 0 _ _ _ -> changeInput 2 < _ ^ _ ^ _ ^
+changeInput 1 _ _ _ -> changeInput 3 < _ ^ _ ^ _ ^
+changeInput | _ _ _ -> goToStart | > _ < _ ^ _ ^
+changeInput _ _ _ _ -> goToStart _ > _ < _ ^ _ ^
+
+finished' _ _ _ | -> finished _ < _ ^ _ ^ _ <
+finished 0 _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished 0 _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished 0 _ _ | -> finished | < _ ^ _ ^ _ <
+finished 0 _ _ _ -> AC _ > _ ^ _ ^ _ <
+finished 1 _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished 1 _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished 1 _ _ | -> finished | < _ ^ _ ^ _ <
+finished 1 _ _ _ -> AC _ > _ ^ _ ^ _ <
+finished 2 _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished 2 _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished 2 _ _ | -> finished | < _ ^ _ ^ _ <
+finished 2 _ _ _ -> AC _ > _ ^ _ ^ _ <
+finished 3 _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished 3 _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished 3 _ _ | -> finished | < _ ^ _ ^ _ <
+finished 3 _ _ _ -> AC _ > _ ^ _ ^ _ <
+finished | _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished | _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished | _ _ | -> finished | < _ ^ _ ^ _ <
+finished | _ _ _ -> AC _ > _ ^ _ ^ _ <
+finished _ _ _ 0 -> finished 0 < _ ^ _ ^ _ <
+finished _ _ _ 1 -> finished 1 < _ ^ _ ^ _ <
+finished _ _ _ | -> finished | < _ ^ _ ^ _ <
+finished _ _ _ _ -> AC _ > _ ^ _ ^ _ <
+
+goToStart 0 0 _ _ -> goToStart 0 ^ 0 < _ ^ _ ^
+goToStart 0 1 _ _ -> goToStart 0 ^ 1 < _ ^ _ ^
+goToStart 0 _ _ _ -> save 0 ^ _ > _ ^ _ ^
+goToStart 1 0 _ _ -> goToStart 1 ^ 0 < _ ^ _ ^
+goToStart 1 1 _ _ -> goToStart 1 ^ 1 < _ ^ _ ^
+goToStart 1 _ _ _ -> save 1 ^ _ > _ ^ _ ^
+goToStart 2 0 _ _ -> goToStart 2 > 0 ^ _ ^ _ ^
+goToStart 2 1 _ _ -> goToStart 2 > 1 ^ _ ^ _ ^
+goToStart 3 0 _ _ -> goToStart 3 > 0 ^ _ ^ _ ^
+goToStart 3 1 _ _ -> goToStart 3 > 1 ^ _ ^ _ ^
+goToStart | 0 _ _ -> goToStart | > 0 ^ _ ^ _ ^
+goToStart | 1 _ _ -> goToStart | > 1 ^ _ ^ _ ^
+goToStart _ 0 _ _ -> goToStart _ ^ 0 > _ ^ _ ^
+goToStart _ 1 _ _ -> goToStart _ ^ 1 > _ ^ _ ^
+goToStart _ _ _ _ -> goToStartIfFirst _ < _ ^ _ ^ _ ^
+
+goToStartIfFirst 0 _ _ _ -> goToStartIfFirst 0 < _ ^ _ ^ _ ^
+goToStartIfFirst 1 _ _ _ -> goToStartIfFirst 1 < _ ^ _ ^ _ ^
+goToStartIfFirst 2 _ _ _ -> goToStartIfFirst 2 < _ ^ _ ^ _ ^
+goToStartIfFirst 3 _ _ _ -> goToStartIfFirst 3 < _ ^ _ ^ _ ^
+goToStartIfFirst | _ _ _ -> goToStartIfFirst | < _ ^ _ ^ _ ^
+goToStartIfFirst _ _ _ _ -> checkFirst _ > _ ^ _ ^ _ ^
+
+goToStartAndCheck 0 _ _ _ -> goToStartAndCheck 0 < _ ^ _ ^ _ ^
+goToStartAndCheck 1 _ _ _ -> goToStartAndCheck 1 < _ ^ _ ^ _ ^
+goToStartAndCheck 2 _ _ _ -> goToStartAndCheck 2 < _ ^ _ ^ _ ^
+goToStartAndCheck 3 _ _ _ -> goToStartAndCheck 3 < _ ^ _ ^ _ ^
+goToStartAndCheck | _ _ _ -> goToStartAndCheck | < _ ^ _ ^ _ ^
+goToStartAndCheck _ _ _ _ -> add' _ > _ < _ ^ _ ^

@@ -1,0 +1,28 @@
+2
+
+S 0 _ -> S _ > 0 >
+S 1 _ -> S _ > 1 >
+S a _ -> and _ ^ _ <
+S o _ -> or _ ^ _ <
+S _ _ -> finished _ ^ _ <
+
+finished _ 1 -> AC 1 ^ _ ^
+finished _ 0 -> AC 0 ^ _ ^
+
+or _ 1 -> orOne _ ^ _ <
+or _ 0 -> orZero _ ^ _ <
+
+orZero _ 0 -> S _ > 0 >
+orZero _ 1 -> S _ > 1 >
+
+orOne _ 0 -> S _ > 1 >
+orOne _ 1 -> S _ > 1 >
+
+and _ 1 -> andOne _ ^ _ <
+and _ 0 -> andZero _ ^ _ <
+
+andZero _ 0 -> S _ > 0 >
+andZero _ 1 -> S _ > 0 >
+
+andOne _ 0 -> S _ > 0 >
+andOne _ 1 -> S _ > 1 >

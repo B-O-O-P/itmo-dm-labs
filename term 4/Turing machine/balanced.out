@@ -1,0 +1,18 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s ) -> rj _ ^
+s ( -> findClosed 9 >
+s 0 -> s _ >
+s _ -> ac _ ^
+
+findClosed ( -> findClosed ( >
+findClosed ) -> goBack 0 <
+findClosed 0 -> findClosed 0 >
+
+goBack ( -> goBack ( <
+goBack ) -> goBack ) <
+goBack 0 -> goBack 0 <
+goBack 9 -> s _ >

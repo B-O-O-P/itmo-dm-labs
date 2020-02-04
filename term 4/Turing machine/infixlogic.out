@@ -1,0 +1,45 @@
+2
+
+S 0 _ -> S _ > 0 >
+S 1 _ -> S _ > 1 >
+
+S a _ -> and _ > _ <
+S o _ -> S _ > o >
+
+S ( _ -> S _ > ( >
+S ) _ -> setClosed _ ^ _ <
+
+S _ _ -> finished _ ^ _ <
+ 
+and 0 0 -> S _ > 0 >
+and 0 1 -> S _ > 0 >
+
+and 1 0 -> S _ > 0 >
+and 1 1 -> S _ > 1 >
+
+and ( 0 -> and' ( ^ 0 >
+and ( 1 -> and' ( ^ 1 >
+ 
+and' ( _ -> S _ > a >
+ 
+setClosed _ 0 -> setClosed _ ^ _ <
+setClosed _ 1 -> setClosedIfOne _ ^ _ <
+
+setClosed _ o -> setClosed _ ^ _ <
+setClosed _ a -> and 0 ^ _ <
+
+setClosed _ ( -> S _ > 0 >
+ 
+setClosedIfOne _ 0 -> setClosedIfOne _ ^ _ <
+setClosedIfOne _ 1 -> setClosedIfOne _ ^ _ <
+
+setClosedIfOne _ o -> setClosedIfOne _ ^ _ <
+setClosedIfOne _ a -> and 1 ^ _ <
+
+setClosedIfOne _ ( -> S _ > 1 >
+ 
+finished _ 0 -> finished _ ^ _ <
+finished _ 1 -> AC 1 ^ _ ^
+
+finished _ o -> finished _ ^ _ <
+finished _ _ -> AC 0 ^ _ ^

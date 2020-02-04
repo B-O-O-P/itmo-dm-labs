@@ -1,0 +1,62 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> s 0 >
+s 1 -> s 1 >
+s 2 -> s 2 >
+s 3 -> s 3 >
+s < -> findNext < <
+ 
+findNext 0 -> goRightIfZero 2 >
+findNext 1 -> goRightIfOne 3 >
+findNext 2 -> findNext 2 <
+findNext 3 -> findNext 3 <
+findNext _ -> right _ >
+ 
+goRightIfZero 2 -> goRightIfZero 2 >
+goRightIfZero 3 -> goRightIfZero 3 >
+goRightIfZero < -> rightIfZero < >
+ 
+rightIfZero 0 -> rightIfZero 0 >
+rightIfZero 1 -> rightIfZero 1 >
+rightIfZero 2 -> removeZero 2 <
+rightIfZero 3 -> removeZero 3 <
+rightIfZero _ -> removeZero _ <
+ 
+goRightIfOne 2 -> goRightIfOne 2 >
+goRightIfOne 3 -> goRightIfOne 3 >
+goRightIfOne < -> rightIfOne < >
+ 
+rightIfOne 0 -> rightIfOne 0 >
+rightIfOne 1 -> rightIfOne 1 >
+rightIfOne 2 -> removeOne 2 <
+rightIfOne 3 -> removeOne 3 <
+rightIfOne _ -> removeOne _ <
+
+right 2 -> right 2 >
+right 3 -> right 3 >
+right < -> found < >
+ 
+found 0 -> found 0 >
+found 1 -> ac _ ^
+found 2 -> found 2 >
+found 3 -> ac _ ^
+found _ -> rj _ ^
+
+removeZero 0 -> goToSign 2 <
+removeZero 1 -> goToSign 3 <
+removeZero < -> rj _ ^
+  
+removeOne 0 -> remove 3 <
+removeOne 1 -> goToSign 2 <
+removeOne < -> rj _ ^
+ 
+remove 0 -> remove 1 <
+remove 1 -> goToSign 0 <
+remove < -> rj _ ^ 
+ 
+goToSign 0 -> goToSign 0 <
+goToSign 1 -> goToSign 1 <
+goToSign < -> findNext < <

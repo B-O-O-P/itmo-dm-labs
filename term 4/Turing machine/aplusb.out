@@ -1,0 +1,40 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> s 0 >
+s 1 -> s 1 >
+s + -> s + >
+s _ -> takeOneFromRight _ <
+
+takeOneFromRight 1 -> toLeft 0 <
+takeOneFromRight 0 -> substract 1 <
+
+substract 1 -> toLeft 0 <
+substract 0 -> substract 1 <
+substract + -> finished + >
+
+toLeft 0 -> toLeft 0 <
+toLeft 1 -> toLeft 1 <
+toLeft + -> addOneToLeft + <
+
+addOneToLeft 0 -> s 1 >
+addOneToLeft 1 -> add 0 <
+
+add 0 -> s 1 >
+add 1 -> add 0 <
+add _ -> s 1 >
+
+finished _ -> remove _ <
+finished 1 -> finished 1 >
+finished 0 -> finished 0 >
+finished + -> toStart _ <
+
+remove 0 -> removeRight _ <
+remove 1 -> remove _ <
+remove + -> toStart _ <
+
+toStart 1 -> toStart 1 <
+toStart 0 -> toStart 0 <
+toStart _ -> ac _ >

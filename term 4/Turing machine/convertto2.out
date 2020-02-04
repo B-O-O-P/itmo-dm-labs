@@ -1,0 +1,47 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+
+s 0 -> s 0 <
+s 1 -> s 1 <
+s 2 -> s 2 <
+s _ -> zero w <
+
+printRight 0 -> printRight 0 >
+printRight 1 -> printRight 1 >
+printRight w -> goRight w >
+
+goRight 0 -> goRight 0 >
+goRight 1 -> goRight 1 >
+goRight 2 -> goRight 2 >
+goRight _ -> removeOne _ <
+
+goLeft 0 -> goLeft 0 <
+goLeft 1 -> goLeft 1 <
+goLeft 2 -> goLeft 2 <
+goLeft w -> addOne w <
+
+removeOne 0 -> removeOne 0 <
+removeOne 1 -> add 0 >
+removeOne 2 -> add 1 >
+removeOne w -> clear w >
+
+addOne 0 -> printRight 1 >
+addOne 1 -> addOne 0 <
+addOne _ -> printRight 1 >
+
+add 0 -> add 2 >
+add _ -> goLeft _ <
+
+clear 0 -> clear 0 >
+clear _ -> clearRight _ <
+
+clearRight 0 -> clearRight _ <
+clearRight w -> finished _ <
+
+zero _ -> printRight 0 >
+
+finished 0 -> finished 0 <
+finished 1 -> finished 1 <
+finished _ -> ac _ >
